@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Go2RTC Play</string>
+
+    <!-- Layout - general -->
+    <string name="settings_desc">设置</string>
+    <string name="back_desc">返回</string>
+    <string name="delete_desc">删除</string>
+
+    <!-- Layout - config -->
+    <string name="server_address_label">go2rtc 服务器地址</string>
+    <string name="scan_lan">扫描局域网</string>
+    <string name="manual_add">手动添加</string>
+    <string name="protocol_label">播放协议 (可多选):</string>
+    <string name="protocol_auto">自动</string>
+    <string name="confirm">确认</string>
+    <string name="hint_address">例如: 192.168.1.100:1984</string>
+    <string name="add_server_title">添加服务器</string>
+    <string name="add">添加</string>
+    <string name="cancel">取消</string>
+
+    <!-- ConfigActivity -->
+    <string name="no_server_selected">请先添加并选择一个服务器</string>
+    <string name="scanning">扫描中…</string>
+    <string name="subnet_info">检测到子网: %1$s, 共扫描 %2$d 个地址</string>
+    <string name="scan_progress">扫描中: %1$d/%2$d (%3$s)</string>
+    <string name="scan_done">扫描局域网</string>
+    <string name="no_server_found">未发现 go2rtc 服务器\n子网: %1$s</string>
+    <string name="found_servers">发现 %1$d 个服务器</string>
+    <string name="local_ip">本机 IP: %1$s</string>
+    <string name="local_ip_unavailable">本机 IP: 无法获取</string>
+    <string name="local_ip_failed">本机 IP: 获取失败</string>
+
+    <!-- MainActivity -->
+    <string name="connect_error">无法连接到 %1$s\n请检查地址或网络</string>
+    <string name="no_streams">没有找到可用的摄像头流</string>
+    <string name="toast_first_launch">首次启动: %1$d 摄像头</string>
+    <string name="toast_known_cams">已知: %1$d, 新: %2$d (%3$s)</string>
+</resources>

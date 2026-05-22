@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
             if (!connected) {
                 loadingIndicator.visibility = View.GONE
                 errorText.visibility = View.VISIBLE
-                errorText.text = "无法连接到 ${server.url}\n请检查地址或网络"
+                errorText.text = getString(R.string.connect_error, server.url)
                 return@launch
             }
 
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
             if (onlineCams.isEmpty()) {
                 loadingIndicator.visibility = View.GONE
                 errorText.visibility = View.VISIBLE
-                errorText.text = "没有找到可用的摄像头流"
+                errorText.text = getString(R.string.no_streams)
                 return@launch
             }
 
@@ -177,12 +177,12 @@ class MainActivity : AppCompatActivity() {
             if (savedNames.isEmpty()) {
                 knownNames = onlineNames
                 android.widget.Toast.makeText(this@MainActivity,
-                    "首次启动: ${onlineNames.size} 摄像头", android.widget.Toast.LENGTH_SHORT).show()
+                    getString(R.string.toast_first_launch, onlineNames.size), android.widget.Toast.LENGTH_SHORT).show()
             } else {
                 knownNames = savedNames.filter { it in onlineNames }.toSet()
                 val newCams = onlineNames - knownNames
                 android.widget.Toast.makeText(this@MainActivity,
-                    "已知: ${knownNames.size}, 新: ${newCams.size} (${newCams.joinToString(",")})",
+                    getString(R.string.toast_known_cams, knownNames.size, newCams.size, newCams.joinToString(",")),
                     android.widget.Toast.LENGTH_SHORT).show()
             }
 

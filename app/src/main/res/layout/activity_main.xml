@@ -46,7 +46,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="设置"
+            android:contentDescription="@string/settings_desc"
             android:src="@android:drawable/ic_menu_manage"
             android:focusable="true" />
 

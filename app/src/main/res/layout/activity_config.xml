@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="go2rtc 服务器地址"
+        android:text="@string/server_address_label"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp" />
@@ -32,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="扫描局域网"
+            android:text="@string/scan_lan"
             android:layout_marginEnd="4dp" />
 
         <Button
@@ -40,7 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="手动添加"
+            android:text="@string/manual_add"
             android:layout_marginStart="4dp" />
 
     </LinearLayout>
@@ -79,7 +79,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="播放协议 (可多选):"
+            android:text="@string/protocol_label"
             android:textSize="14sp"
             android:layout_marginBottom="4dp" />
 
@@ -92,7 +92,7 @@
                 android:id="@+id/cbAuto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="自动"
+                android:text="@string/protocol_auto"
                 android:layout_marginEnd="12dp" />
 
             <CheckBox
@@ -138,7 +138,7 @@
         android:id="@+id/confirmBtn"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="确认"
+        android:text="@string/confirm"
         android:layout_marginTop="12dp"
         android:backgroundTint="#1976D2"
         android:textColor="#FFFFFF"

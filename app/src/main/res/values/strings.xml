@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">Go2RTC Play</string>
+
+    <!-- Layout - general -->
+    <string name="settings_desc">Settings</string>
+    <string name="back_desc">Back</string>
+    <string name="delete_desc">Delete</string>
+
+    <!-- Layout - config -->
+    <string name="server_address_label">go2rtc Server Address</string>
+    <string name="scan_lan">Scan LAN</string>
+    <string name="manual_add">Manual Add</string>
+    <string name="protocol_label">Play Protocol (multiple):</string>
+    <string name="protocol_auto">Auto</string>
+    <string name="confirm">Confirm</string>
+    <string name="hint_address">e.g. 192.168.1.100:1984</string>
+    <string name="add_server_title">Add Server</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- ConfigActivity -->
+    <string name="no_server_selected">Please add and select a server first</string>
+    <string name="scanning">Scanning…</string>
+    <string name="subnet_info">Detected subnet: %1$s, scanning %2$d addresses</string>
+    <string name="scan_progress">Scanning: %1$d/%2$d (%3$s)</string>
+    <string name="scan_done">Scan LAN</string>
+    <string name="no_server_found">No go2rtc server found\nSubnet: %1$s</string>
+    <string name="found_servers">Found %1$d server(s)</string>
+    <string name="local_ip">Local IP: %1$s</string>
+    <string name="local_ip_unavailable">Local IP: unavailable</string>
+    <string name="local_ip_failed">Local IP: failed</string>
+
+    <!-- MainActivity -->
+    <string name="connect_error">Cannot connect to %1$s\nPlease check address or network</string>
+    <string name="no_streams">No available camera streams found</string>
+    <string name="toast_first_launch">First launch: %1$d cameras</string>
+    <string name="toast_known_cams">Known: %1$d, New: %2$d (%3$s)</string>
 </resources>

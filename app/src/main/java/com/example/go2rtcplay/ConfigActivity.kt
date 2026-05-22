@@ -66,7 +66,7 @@ class ConfigActivity : AppCompatActivity() {
                 setResult(RESULT_OK)
                 finish()
             } else {
-                Toast.makeText(this, "请先添加并选择一个服务器", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.no_server_selected), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -89,7 +89,7 @@ class ConfigActivity : AppCompatActivity() {
     private fun startScan() {
         if (scanJob?.isActive == true) return
         scanBtn.isEnabled = false
-        scanBtn.text = "扫描中..."
+        scanBtn.text = getString(R.string.scanning)
         scanProgressBar.visibility = android.view.View.VISIBLE
         scanStatusText.visibility = android.view.View.VISIBLE
         scanProgressBar.progress = 0
@@ -97,14 +97,14 @@ class ConfigActivity : AppCompatActivity() {
         val scanner = LanScanner()
         val subnets = scanner.getLocalSubnets()
         val total = subnets.size * 254
-        scanStatusText.text = "检测到子网: ${subnets.joinToString(", ")}, 共扫描 $total 个地址"
+        scanStatusText.text = getString(R.string.subnet_info, subnets.joinToString(", "), total)
 
         scanJob = scope.launch {
             val found = scanner.scan(onProgress = { scanned, total, ip ->
                 launch(Dispatchers.Main) {
                     scanProgressBar.max = total
                     scanProgressBar.progress = scanned
-                    scanStatusText.text = "扫描中: $scanned/$total  ($ip)"
+                    scanStatusText.text = getString(R.string.scan_progress, scanned, total, ip)
                 }
             })
 
@@ -112,14 +112,14 @@ class ConfigActivity : AppCompatActivity() {
             refreshList()
 
             scanBtn.isEnabled = true
-            scanBtn.text = "扫描局域网"
+            scanBtn.text = getString(R.string.scan_done)
             scanProgressBar.visibility = android.view.View.GONE
             scanStatusText.visibility = android.view.View.GONE
 
             if (found.isEmpty()) {
-                Toast.makeText(this@ConfigActivity, "未发现 go2rtc 服务器\n子网: ${subnets.joinToString(", ")}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ConfigActivity, getString(R.string.no_server_found, subnets.joinToString(", ")), Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(this@ConfigActivity, "发现 ${found.size} 个服务器", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ConfigActivity, getString(R.string.found_servers, found.size), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -128,12 +128,12 @@ class ConfigActivity : AppCompatActivity() {
         try {
             val ips = LanScanner().getLocalIps()
             localIpText.text = if (ips.isNotEmpty()) {
-                "本机 IP: ${ips.joinToString(", ")}"
+                getString(R.string.local_ip, ips.joinToString(", "))
             } else {
-                "本机 IP: 无法获取"
+                getString(R.string.local_ip_unavailable)
             }
         } catch (e: Exception) {
-            localIpText.text = "本机 IP: 获取失败"
+            localIpText.text = getString(R.string.local_ip_failed)
         }
     }
 
@@ -170,7 +170,7 @@ class ConfigActivity : AppCompatActivity() {
 
     private fun showAddDialog() {
         val input = EditText(this).apply {
-            hint = "例如: 192.168.1.100:1984"
+            hint = getString(R.string.hint_address)
             inputType = android.text.InputType.TYPE_CLASS_TEXT
         }
 
@@ -178,9 +178,9 @@ class ConfigActivity : AppCompatActivity() {
         input.setHintTextColor(android.graphics.Color.GRAY)
 
         AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert)
-            .setTitle("添加服务器")
+            .setTitle(getString(R.string.add_server_title))
             .setView(input)
-            .setPositiveButton("添加") { _, _ ->
+            .setPositiveButton(getString(R.string.add)) { _, _ ->
                 val text = input.text.toString().trim()
                 if (text.isNotEmpty()) {
                     val parts = text.split(":")
@@ -190,7 +190,7 @@ class ConfigActivity : AppCompatActivity() {
                     refreshList()
                 }
             }
-            .setNegativeButton("取消", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
