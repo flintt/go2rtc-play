@@ -128,7 +128,8 @@
                 android:id="@+id/cbMjpeg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MJPEG" />
+                android:text="MJPEG"
+                android:nextFocusDown="@id/refreshIntervalInput" />
 
         </LinearLayout>
 
@@ -139,14 +140,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="12dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:focusable="false">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/refresh_interval_label"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:focusable="false" />
 
         <EditText
             android:id="@+id/refreshIntervalInput"
@@ -155,7 +158,11 @@
             android:inputType="number"
             android:textSize="14sp"
             android:gravity="center"
-            android:background="@android:drawable/editbox_background" />
+            android:background="@android:drawable/editbox_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:nextFocusUp="@id/cbMjpeg"
+            android:nextFocusDown="@id/confirmBtn" />
 
     </LinearLayout>
 
@@ -167,6 +174,7 @@
         android:layout_marginTop="12dp"
         android:backgroundTint="#1976D2"
         android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:nextFocusUp="@id/refreshIntervalInput" />
 
 </LinearLayout>
