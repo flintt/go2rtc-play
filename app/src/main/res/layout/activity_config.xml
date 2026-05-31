@@ -134,6 +134,31 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/refresh_interval_label"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/refreshIntervalInput"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:inputType="number"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@android:drawable/editbox_background" />
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/confirmBtn"
         android:layout_width="match_parent"

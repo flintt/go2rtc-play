@@ -198,6 +198,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadStreamPage() {
         val server = currentServer ?: return
+        val refreshIntervalMs = configRepo.getRefreshInterval()
 
         val html = buildString {
             append("""
@@ -315,7 +316,7 @@ function recheckHidden(){
 relayout();
 refreshFrames();
 recheckHidden();
-setInterval(function(){refreshFrames();},5000);
+setInterval(function(){refreshFrames();},${refreshIntervalMs});
 setInterval(function(){recheckHidden();},30000);
 window.addEventListener('resize',relayout);
 </script>

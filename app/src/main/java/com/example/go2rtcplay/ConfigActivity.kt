@@ -31,6 +31,7 @@ class ConfigActivity : AppCompatActivity() {
     private lateinit var cbMse: CheckBox
     private lateinit var cbHls: CheckBox
     private lateinit var cbMjpeg: CheckBox
+    private lateinit var refreshIntervalInput: EditText
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var adapter: ServerAdapter? = null
@@ -53,15 +54,25 @@ class ConfigActivity : AppCompatActivity() {
         cbMse = findViewById(R.id.cbMse)
         cbHls = findViewById(R.id.cbHls)
         cbMjpeg = findViewById(R.id.cbMjpeg)
+        refreshIntervalInput = findViewById(R.id.refreshIntervalInput)
 
         addressList.layoutManager = LinearLayoutManager(this)
         refreshList()
         showLocalIp()
         setupProtocolCheckboxes()
+        setupRefreshInterval()
 
         scanBtn.setOnClickListener { startScan() }
         addBtn.setOnClickListener { showAddDialog() }
         confirmBtn.setOnClickListener {
+            val intervalText = refreshIntervalInput.text.toString().trim()
+            val intervalSec = intervalText.toIntOrNull()
+            if (intervalSec == null || intervalSec < 1) {
+                Toast.makeText(this, "Interval must be >= 1 second", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            configRepo.setRefreshInterval(intervalSec * 1000)
+
             if (configRepo.getActiveServer() != null) {
                 setResult(RESULT_OK)
                 finish()
@@ -166,6 +177,11 @@ class ConfigActivity : AppCompatActivity() {
             configRepo.setPreferredProtocol(p.joinToString(","))
         }
         checks.values.forEach { it.setOnCheckedChangeListener(listener) }
+    }
+
+    private fun setupRefreshInterval() {
+        val ms = configRepo.getRefreshInterval()
+        refreshIntervalInput.setText((ms / 1000).toString())
     }
 
     private fun showAddDialog() {

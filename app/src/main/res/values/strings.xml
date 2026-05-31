@@ -30,6 +30,8 @@
     <string name="local_ip_unavailable">Local IP: unavailable</string>
     <string name="local_ip_failed">Local IP: failed</string>
 
+    <string name="refresh_interval_label">Snapshot Refresh Interval (seconds):</string>
+
     <!-- MainActivity -->
     <string name="connect_error">Cannot connect to %1$s\nPlease check address or network</string>
     <string name="no_streams">No available camera streams found</string>

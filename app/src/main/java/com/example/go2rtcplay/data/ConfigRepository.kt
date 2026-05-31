@@ -71,4 +71,12 @@ class ConfigRepository(context: Context) {
         val type = object : TypeToken<List<String>>() {}.type
         return gson.fromJson(json, type) ?: emptyList()
     }
+
+    fun getRefreshInterval(): Int {
+        return prefs.getInt("refresh_interval", 5000)
+    }
+
+    fun setRefreshInterval(ms: Int) {
+        prefs.edit().putInt("refresh_interval", ms).apply()
+    }
 }
