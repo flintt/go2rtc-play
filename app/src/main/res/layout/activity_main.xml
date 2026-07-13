@@ -4,108 +4,137 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="@color/app_background">
 
-    <ProgressBar
-        android:id="@+id/loadingIndicator"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:id="@+id/errorPanel"
+    <WebView
+        android:id="@+id/webView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
+        android:background="@color/app_background"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/errorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:padding="16dp" />
-
-        <Button
-            android:id="@+id/retryBtn"
-            android:layout_width="160dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/retry"
-            android:textAllCaps="false"
-            android:backgroundTint="#1976D2"
-            android:textColor="#FFFFFF" />
-
-    </LinearLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
 
     <LinearLayout
         android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#CC000000"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bg_top_bar"
         android:gravity="center_vertical"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
         android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
             android:id="@+id/settingsBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?selectableItemBackgroundBorderless"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_icon_button"
             android:contentDescription="@string/settings_desc"
+            android:focusable="true"
+            android:padding="10dp"
             android:src="@android:drawable/ic_menu_manage"
-            android:focusable="true" />
+            android:tint="@color/text_primary" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/app_name"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/serverText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:gravity="center"
+                android:layout_marginTop="2dp"
+                android:ellipsize="middle"
                 android:singleLine="true"
-                android:ellipsize="middle" />
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
 
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/refreshBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?selectableItemBackgroundBorderless"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_icon_button"
             android:contentDescription="@string/refresh_desc"
+            android:focusable="true"
+            android:padding="10dp"
             android:src="@android:drawable/ic_popup_sync"
-            android:focusable="true" />
+            android:tint="@color/text_primary" />
 
     </LinearLayout>
 
-    <WebView
-        android:id="@+id/webView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/topBar"
-        app:layout_constraintBottom_toBottomOf="parent" />
+    <LinearLayout
+        android:id="@+id/errorPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/bg_error_panel"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <TextView
+            android:id="@+id/errorText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:lineSpacingExtra="2dp"
+            android:padding="4dp"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/retryBtn"
+            android:layout_width="180dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_primary_button"
+            android:text="@string/retry"
+            android:textAllCaps="false"
+            android:textColor="#061012"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:indeterminateTint="@color/accent_teal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

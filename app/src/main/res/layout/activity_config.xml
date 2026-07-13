@@ -1,180 +1,271 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/app_background"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:padding="16dp">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/server_address_label"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/addressList"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
-
-        <Button
-            android:id="@+id/scanBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/scan_lan"
-            android:layout_marginEnd="4dp" />
-
-        <Button
-            android:id="@+id/addBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/manual_add"
-            android:layout_marginStart="4dp" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/scanStatusText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:textColor="#666666"
-        android:visibility="gone"
-        android:layout_marginTop="4dp" />
-
-    <ProgressBar
-        android:id="@+id/scanProgressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:visibility="gone"
-        android:layout_marginTop="4dp" />
+        android:text="@string/config_title"
+        android:textColor="@color/text_primary"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/localIpText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="11sp"
-        android:textColor="#888888"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="12dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/protocol_label"
-            android:textSize="14sp"
-            android:layout_marginBottom="4dp" />
+        android:layout_height="0dp"
+        android:layout_marginTop="14dp"
+        android:layout_weight="1"
+        app:cardBackgroundColor="@color/surface_card"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="14dp">
 
-            <CheckBox
-                android:id="@+id/cbAuto"
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/protocol_auto"
-                android:layout_marginEnd="12dp" />
+                android:text="@string/config_servers"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-            <CheckBox
-                android:id="@+id/cbWebrtc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="WebRTC"
-                android:layout_marginEnd="12dp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/addressList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingBottom="4dp" />
 
-            <CheckBox
-                android:id="@+id/cbMse"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="MSE"
-                android:layout_marginEnd="12dp" />
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/scanBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_secondary_button"
+                    android:text="@string/scan_lan"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_primary" />
+
+                <Button
+                    android:id="@+id/addBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_secondary_button"
+                    android:text="@string/manual_add"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_primary" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/scanStatusText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="middle"
+                android:singleLine="true"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/scanProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="6dp"
+                android:indeterminateTint="@color/accent_teal"
+                android:progressTint="@color/accent_teal"
+                android:visibility="gone" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
+    </androidx.cardview.widget.CardView>
 
-            <CheckBox
-                android:id="@+id/cbHls"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="HLS"
-                android:layout_marginEnd="12dp" />
-
-            <CheckBox
-                android:id="@+id/cbMjpeg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="MJPEG"
-                android:nextFocusDown="@id/refreshIntervalInput" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="12dp"
-        android:gravity="center_vertical"
-        android:focusable="false">
+        app:cardBackgroundColor="@color/surface_card"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp">
 
-        <TextView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/refresh_interval_label"
-            android:textSize="14sp"
-            android:focusable="false" />
+            android:orientation="vertical"
+            android:padding="14dp">
 
-        <EditText
-            android:id="@+id/refreshIntervalInput"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:inputType="number"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:background="@android:drawable/editbox_background"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:nextFocusUp="@id/cbMjpeg"
-            android:nextFocusDown="@id/confirmBtn" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/config_playback"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cbAuto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:buttonTint="@color/accent_teal"
+                    android:text="@string/protocol_auto"
+                    android:textColor="@color/text_primary" />
+
+                <CheckBox
+                    android:id="@+id/cbWebrtc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="14dp"
+                    android:buttonTint="@color/accent_teal"
+                    android:text="WebRTC"
+                    android:textColor="@color/text_primary" />
+
+                <CheckBox
+                    android:id="@+id/cbMse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="14dp"
+                    android:buttonTint="@color/accent_teal"
+                    android:text="MSE"
+                    android:textColor="@color/text_primary" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cbHls"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:buttonTint="@color/accent_teal"
+                    android:text="HLS"
+                    android:textColor="@color/text_primary" />
+
+                <CheckBox
+                    android:id="@+id/cbMjpeg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="14dp"
+                    android:buttonTint="@color/accent_teal"
+                    android:nextFocusDown="@id/refreshIntervalInput"
+                    android:text="MJPEG"
+                    android:textColor="@color/text_primary" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="@color/surface_card"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="14dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/config_refresh"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="@string/refresh_interval_label"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/refreshIntervalInput"
+                android:layout_width="88dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_text_input"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:inputType="number"
+                android:nextFocusDown="@id/confirmBtn"
+                android:nextFocusUp="@id/cbMjpeg"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/confirmBtn"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_primary_button"
+        android:nextFocusUp="@id/refreshIntervalInput"
         android:text="@string/confirm"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#1976D2"
-        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textColor="#061012"
         android:textSize="16sp"
-        android:nextFocusUp="@id/refreshIntervalInput" />
+        android:textStyle="bold" />
 
 </LinearLayout>

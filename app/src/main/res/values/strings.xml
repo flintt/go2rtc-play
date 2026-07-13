@@ -7,8 +7,14 @@
     <string name="delete_desc">Delete</string>
     <string name="refresh_desc">Refresh</string>
     <string name="retry">Retry</string>
+    <string name="server_active">Active</string>
+    <string name="server_saved">Saved</string>
 
     <!-- Layout - config -->
+    <string name="config_title">Connection Settings</string>
+    <string name="config_servers">Servers</string>
+    <string name="config_playback">Playback</string>
+    <string name="config_refresh">Snapshots</string>
     <string name="server_address_label">go2rtc Server Address</string>
     <string name="scan_lan">Scan LAN</string>
     <string name="manual_add">Manual Add</string>

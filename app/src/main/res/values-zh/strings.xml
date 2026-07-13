@@ -7,8 +7,14 @@
     <string name="delete_desc">删除</string>
     <string name="refresh_desc">刷新</string>
     <string name="retry">重试</string>
+    <string name="server_active">当前</string>
+    <string name="server_saved">已保存</string>
 
     <!-- Layout - config -->
+    <string name="config_title">连接设置</string>
+    <string name="config_servers">服务器</string>
+    <string name="config_playback">播放</string>
+    <string name="config_refresh">快照</string>
     <string name="server_address_label">go2rtc 服务器地址</string>
     <string name="scan_lan">扫描局域网</string>
     <string name="manual_add">手动添加</string>

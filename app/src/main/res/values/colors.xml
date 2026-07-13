@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#071116</color>
+    <color name="app_background">#090C10</color>
+    <color name="surface_card">#141922</color>
+    <color name="surface_card_selected">#182B2C</color>
+    <color name="surface_subtle">#1B222C</color>
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#AAB4C0</color>
+    <color name="accent_teal">#14B8A6</color>
+    <color name="accent_green">#34D399</color>
+    <color name="accent_amber">#FBBF24</color>
+    <color name="danger">#FB7185</color>
 </resources>

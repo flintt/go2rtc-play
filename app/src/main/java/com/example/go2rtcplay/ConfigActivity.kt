@@ -217,10 +217,11 @@ class ConfigActivity : AppCompatActivity() {
             inputType = android.text.InputType.TYPE_CLASS_TEXT
         }
 
-        input.setTextColor(android.graphics.Color.BLACK)
-        input.setHintTextColor(android.graphics.Color.GRAY)
+        input.setTextColor(getColor(R.color.text_primary))
+        input.setHintTextColor(getColor(R.color.text_secondary))
+        input.setBackgroundResource(R.drawable.bg_text_input)
 
-        AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert)
+        AlertDialog.Builder(this)
             .setTitle(getString(R.string.add_server_title))
             .setView(input)
             .setPositiveButton(getString(R.string.add)) { _, _ ->

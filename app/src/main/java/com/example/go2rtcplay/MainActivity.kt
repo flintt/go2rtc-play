@@ -254,18 +254,22 @@ class MainActivity : AppCompatActivity() {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;width:100%;overflow:hidden;background:#05070a;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html,body{height:100%;width:100%;overflow:hidden;background:#090c10;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body{touch-action:manipulation}
-.grid{display:grid;gap:4px;padding:4px;height:100vh;width:100vw;background:#05070a}
-.cam{width:100%;height:100%;overflow:hidden;position:relative;background:#10151c;cursor:pointer;outline:none;border:2px solid transparent;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-.cam:focus{border-color:#34d399;box-shadow:0 0 0 2px rgba(52,211,153,.36),inset 0 0 0 1px rgba(255,255,255,.08)}
-.cam img{width:100%;height:100%;object-fit:contain;background:#05070a}
-.cam.offline img,.cam.probing img{opacity:.28}
-.lbl{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:rgba(0,0,0,.62);color:#fff;font-size:12px;line-height:1.25;padding:3px 7px;border-radius:999px;pointer-events:none}
-.state{position:absolute;right:6px;top:6px;background:rgba(0,0,0,.62);color:#d1d5db;font-size:11px;line-height:1;padding:4px 6px;border-radius:999px;pointer-events:none}
-.cam.live .state{color:#86efac}
-.cam.offline .state{color:#fca5a5}
+.grid{display:grid;gap:8px;padding:8px;height:100vh;width:100vw;background:#090c10}
+.cam{width:100%;height:100%;overflow:hidden;position:relative;background:#111820;cursor:pointer;outline:none;border:1px solid rgba(148,163,184,.16);border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.04)}
+.cam:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,0) 28%,rgba(0,0,0,.22));z-index:1;pointer-events:none}
+.cam:focus{border-color:#14b8a6;box-shadow:0 0 0 3px rgba(20,184,166,.42),0 16px 36px rgba(0,0,0,.32),inset 0 0 0 1px rgba(255,255,255,.08)}
+.cam img{width:100%;height:100%;object-fit:contain;background:#070a0e;transition:opacity .18s ease,transform .18s ease}
+.cam.live img{opacity:1}
+.cam.offline img,.cam.probing img{opacity:.22}
+.cam.probing:after{content:"";position:absolute;left:14px;right:14px;bottom:42px;height:3px;border-radius:999px;background:linear-gradient(90deg,rgba(20,184,166,.1),rgba(20,184,166,.86),rgba(20,184,166,.1));z-index:2;animation:pulse 1.2s ease-in-out infinite}
+.lbl{position:absolute;left:10px;bottom:10px;z-index:3;max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:rgba(9,12,16,.78);color:#f8fafc;font-size:13px;line-height:1.25;padding:6px 10px;border:1px solid rgba(255,255,255,.08);border-radius:999px;pointer-events:none}
+.state{position:absolute;right:10px;top:10px;z-index:3;background:rgba(9,12,16,.78);color:#cbd5e1;font-size:11px;line-height:1;padding:6px 8px;border:1px solid rgba(255,255,255,.08);border-radius:999px;pointer-events:none}
+.cam.live .state{color:#86efac;border-color:rgba(52,211,153,.34)}
+.cam.offline .state{color:#fca5a5;border-color:rgba(251,113,133,.34)}
 .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:13px;pointer-events:none}
+@keyframes pulse{0%,100%{opacity:.28;transform:scaleX(.72)}50%{opacity:1;transform:scaleX(1)}}
 </style>
 </head>
 <body>
