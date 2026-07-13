@@ -5,6 +5,8 @@
     <string name="settings_desc">设置</string>
     <string name="back_desc">返回</string>
     <string name="delete_desc">删除</string>
+    <string name="refresh_desc">刷新</string>
+    <string name="retry">重试</string>
 
     <!-- Layout - config -->
     <string name="server_address_label">go2rtc 服务器地址</string>
@@ -29,12 +31,20 @@
     <string name="local_ip">本机 IP: %1$s</string>
     <string name="local_ip_unavailable">本机 IP: 无法获取</string>
     <string name="local_ip_failed">本机 IP: 获取失败</string>
+    <string name="invalid_address">服务器地址格式不正确</string>
+    <string name="invalid_refresh_interval">刷新间隔需为 1-60 秒</string>
 
     <string name="refresh_interval_label">快照刷新间隔 (秒):</string>
 
     <!-- MainActivity -->
+    <string name="main_status">%1$s · %2$d 路 · %3$d秒</string>
     <string name="connect_error">无法连接到 %1$s\n请检查地址或网络</string>
     <string name="no_streams">没有找到可用的摄像头流</string>
+    <string name="camera_live">在线</string>
+    <string name="camera_connecting">连接中</string>
+    <string name="camera_retrying">重试中</string>
+    <string name="camera_offline">离线</string>
     <string name="toast_first_launch">首次启动: %1$d 摄像头</string>
     <string name="toast_known_cams">已知: %1$d, 新: %2$d (%3$s)</string>
+    <string name="toast_new_cams">发现 %1$d 路新摄像头</string>
 </resources>

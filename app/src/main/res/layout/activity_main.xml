@@ -16,19 +16,40 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/errorText"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/errorPanel"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:orientation="vertical"
         android:gravity="center"
-        android:padding="24dp"
-        android:visibility="gone" />
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/errorText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:padding="16dp" />
+
+        <Button
+            android:id="@+id/retryBtn"
+            android:layout_width="160dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/retry"
+            android:textAllCaps="false"
+            android:backgroundTint="#1976D2"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/topBar"
@@ -59,12 +80,24 @@
 
             <TextView
                 android:id="@+id/serverText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFF"
-                android:textSize="14sp" />
+                android:textSize="13sp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:ellipsize="middle" />
 
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/refreshBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/refresh_desc"
+            android:src="@android:drawable/ic_popup_sync"
+            android:focusable="true" />
 
     </LinearLayout>
 

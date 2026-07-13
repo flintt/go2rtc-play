@@ -10,6 +10,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class FullscreenActivity : AppCompatActivity() {
 
@@ -27,7 +29,7 @@ class FullscreenActivity : AppCompatActivity() {
         val serverUrl = intent.getStringExtra("server_url") ?: ""
         val cameraName = intent.getStringExtra("camera_name") ?: ""
         val modeParam = intent.getStringExtra("mode_param") ?: ""
-        val url = "$serverUrl/stream.html?src=$cameraName$modeParam"
+        val url = "$serverUrl/stream.html?src=${urlEncode(cameraName)}$modeParam"
 
         webView.settings.apply {
             javaScriptEnabled = true
@@ -94,4 +96,7 @@ class FullscreenActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
     }
+
+    private fun urlEncode(value: String): String =
+        URLEncoder.encode(value, StandardCharsets.UTF_8.name())
 }

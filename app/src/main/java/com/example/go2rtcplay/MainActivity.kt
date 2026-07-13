@@ -6,11 +6,14 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -20,6 +23,9 @@ import com.example.go2rtcplay.data.ServerAddress
 import com.example.go2rtcplay.network.CameraInfo
 import com.example.go2rtcplay.network.Go2RtcClient
 import kotlinx.coroutines.*
+import org.json.JSONObject
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,8 +34,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var loadingIndicator: ProgressBar
     private lateinit var errorText: TextView
+    private lateinit var errorPanel: View
+    private lateinit var retryBtn: Button
     private lateinit var serverText: TextView
     private lateinit var settingsBtn: ImageButton
+    private lateinit var refreshBtn: ImageButton
     private lateinit var topBar: View
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -59,7 +68,10 @@ class MainActivity : AppCompatActivity() {
         webView = findViewById(R.id.webView)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         errorText = findViewById(R.id.errorText)
+        errorPanel = findViewById(R.id.errorPanel)
+        retryBtn = findViewById(R.id.retryBtn)
         serverText = findViewById(R.id.serverText)
+        refreshBtn = findViewById(R.id.refreshBtn)
         topBar = findViewById(R.id.topBar)
 
         setupWebView()
@@ -80,8 +92,24 @@ class MainActivity : AppCompatActivity() {
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
             mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE
             loadWithOverviewMode = true
             useWideViewPort = true
+        }
+
+        webView.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) showUI()
+            false
+        }
+        webView.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                showUI()
+                if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_SETTINGS) {
+                    showConfig()
+                    return@setOnKeyListener true
+                }
+            }
+            false
         }
 
         webView.addJavascriptInterface(
@@ -119,12 +147,16 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 if (url == "about:blank") return
                 loadingIndicator.visibility = View.GONE
+                webView.visibility = View.VISIBLE
+                webView.requestFocus()
             }
         }
     }
 
     private fun setupButtons() {
         settingsBtn.setOnClickListener { showConfig() }
+        refreshBtn.setOnClickListener { currentServer?.let { connectToServer(it) } }
+        retryBtn.setOnClickListener { currentServer?.let { connectToServer(it) } ?: showConfig() }
     }
 
     private fun showUI() {
@@ -146,9 +178,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun connectToServer(server: ServerAddress) {
         currentServer = server
-        serverText.text = server.host
+        serverText.text = server.url
         loadingIndicator.visibility = View.VISIBLE
-        errorText.visibility = View.GONE
+        errorPanel.visibility = View.GONE
+        webView.visibility = View.GONE
         showUI()
 
         scope.launch {
@@ -156,17 +189,13 @@ class MainActivity : AppCompatActivity() {
             val connected = client.checkConnection()
 
             if (!connected) {
-                loadingIndicator.visibility = View.GONE
-                errorText.visibility = View.VISIBLE
-                errorText.text = getString(R.string.connect_error, server.url)
+                showError(getString(R.string.connect_error, server.url))
                 return@launch
             }
 
             val onlineCams = client.getStreams().filter { it.online }
             if (onlineCams.isEmpty()) {
-                loadingIndicator.visibility = View.GONE
-                errorText.visibility = View.VISIBLE
-                errorText.text = getString(R.string.no_streams)
+                showError(getString(R.string.no_streams))
                 return@launch
             }
 
@@ -181,9 +210,11 @@ class MainActivity : AppCompatActivity() {
             } else {
                 knownNames = savedNames.filter { it in onlineNames }.toSet()
                 val newCams = onlineNames - knownNames
-                android.widget.Toast.makeText(this@MainActivity,
-                    getString(R.string.toast_known_cams, knownNames.size, newCams.size, newCams.joinToString(",")),
-                    android.widget.Toast.LENGTH_SHORT).show()
+                if (newCams.isNotEmpty()) {
+                    android.widget.Toast.makeText(this@MainActivity,
+                        getString(R.string.toast_new_cams, newCams.size),
+                        android.widget.Toast.LENGTH_SHORT).show()
+                }
             }
 
             val camMap = onlineCams.associateBy { it.name }
@@ -192,13 +223,27 @@ class MainActivity : AppCompatActivity() {
                        onlineNames.filter { it !in savedNames })
                       .distinct().mapNotNull { camMap[it] }
 
+            val refreshSec = (configRepo.getRefreshInterval() / 1000).coerceAtLeast(1)
+            serverText.text = getString(R.string.main_status, server.host, cameras.size, refreshSec)
             loadStreamPage()
         }
+    }
+
+    private fun showError(message: String) {
+        loadingIndicator.visibility = View.GONE
+        webView.visibility = View.GONE
+        errorPanel.visibility = View.VISIBLE
+        errorText.text = message
+        showUI()
     }
 
     private fun loadStreamPage() {
         val server = currentServer ?: return
         val refreshIntervalMs = configRepo.getRefreshInterval()
+        val liveLabel = getString(R.string.camera_live)
+        val connectingLabel = getString(R.string.camera_connecting)
+        val retryingLabel = getString(R.string.camera_retrying)
+        val offlineLabel = getString(R.string.camera_offline)
 
         val html = buildString {
             append("""
@@ -209,32 +254,44 @@ class MainActivity : AppCompatActivity() {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{margin:0;padding:0;overflow:hidden;background:#000;height:100vh;width:100vw}
-.grid{display:grid;gap:2px;height:100vh;width:100vw}
-.cam{width:100%;height:100%;overflow:hidden;position:relative;background:#111;cursor:pointer;outline:none;border:0}
-.cam:focus{outline:2px solid #4CAF50;outline-offset:-2px}
-.cam img{width:100%;height:100%;object-fit:contain}
-.cam .lbl{position:absolute;bottom:2px;left:2px;background:rgba(0,0,0,0.6);color:#0f0;font-size:11px;padding:1px 4px;font-family:sans-serif;pointer-events:none}
+html,body{height:100%;width:100%;overflow:hidden;background:#05070a;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{touch-action:manipulation}
+.grid{display:grid;gap:4px;padding:4px;height:100vh;width:100vw;background:#05070a}
+.cam{width:100%;height:100%;overflow:hidden;position:relative;background:#10151c;cursor:pointer;outline:none;border:2px solid transparent;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.cam:focus{border-color:#34d399;box-shadow:0 0 0 2px rgba(52,211,153,.36),inset 0 0 0 1px rgba(255,255,255,.08)}
+.cam img{width:100%;height:100%;object-fit:contain;background:#05070a}
+.cam.offline img,.cam.probing img{opacity:.28}
+.lbl{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:rgba(0,0,0,.62);color:#fff;font-size:12px;line-height:1.25;padding:3px 7px;border-radius:999px;pointer-events:none}
+.state{position:absolute;right:6px;top:6px;background:rgba(0,0,0,.62);color:#d1d5db;font-size:11px;line-height:1;padding:4px 6px;border-radius:999px;pointer-events:none}
+.cam.live .state{color:#86efac}
+.cam.offline .state{color:#fca5a5}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:13px;pointer-events:none}
 </style>
 </head>
 <body>
 <div class="grid">
 """.trimIndent())
-            cameras.forEach { cam ->
-                val frameUrl = "${server.url}/api/frame.jpeg?src=${cam.name}"
+            cameras.forEachIndexed { index, cam ->
+                val frameUrl = "/api/frame.jpeg?src=${urlEncode(cam.name)}"
                 val isKnown = cam.name in knownNames
+                val nameAttr = htmlEscape(cam.name)
+                val display = if (isKnown) "" else """ style="display:none""""
+                val active = if (isKnown) "1" else "0"
+                val stateLabel = if (isKnown) connectingLabel else offlineLabel
                 if (isKnown) {
                     append("""
-<div class="cam" tabindex="0" data-name="${cam.name}" onclick="Android.onCameraClick('${cam.name}')" onkeydown="if(event.key==='Enter')Android.onCameraClick('${cam.name}')">
-<img id="i${cam.name}" data-src="$frameUrl" alt="${cam.name}">
-<div class="lbl">${cam.name}</div>
+<div class="cam probing" tabindex="0" data-name="$nameAttr" data-src="$frameUrl" data-active="$active" data-known="1"$display>
+<img id="cam$index" alt="$nameAttr">
+<div class="state">$stateLabel</div>
+<div class="lbl">$nameAttr</div>
 </div>
 """.trimIndent())
                 } else {
                     append("""
-<div class="cam" tabindex="0" data-name="${cam.name}" style="display:none" onclick="Android.onCameraClick('${cam.name}')" onkeydown="if(event.key==='Enter')Android.onCameraClick('${cam.name}')">
-<img id="i${cam.name}" alt="${cam.name}">
-<div class="lbl">${cam.name}</div>
+<div class="cam probing" tabindex="0" data-name="$nameAttr" data-src="$frameUrl" data-active="$active" data-known="0"$display>
+<img id="cam$index" alt="$nameAttr">
+<div class="state">$stateLabel</div>
+<div class="lbl">$nameAttr</div>
 </div>
 """.trimIndent())
                 }
@@ -242,49 +299,105 @@ body{margin:0;padding:0;overflow:hidden;background:#000;height:100vh;width:100vw
             append("""
 </div>
 <script>
-var fc={},cc={};
+var fc={},cc={},currentCols=1;
+var LABEL_LIVE=${jsString(liveLabel)},LABEL_CONNECTING=${jsString(connectingLabel)},LABEL_RETRYING=${jsString(retryingLabel)},LABEL_OFFLINE=${jsString(offlineLabel)};
+function visibleCells(){
+    var all=document.querySelectorAll('.cam'),out=[];
+    for(var i=0;i<all.length;i++){if(all[i].style.display!=='none')out.push(all[i]);}
+    return out;
+}
+function setState(cell,cls,label){
+    cell.classList.remove('live','offline','probing');
+    if(cls)cell.classList.add(cls);
+    var s=cell.querySelector('.state');
+    if(s)s.textContent=label||'';
+}
 function relayout(){
-    var v=0,cams=document.querySelectorAll('.cam');
-    for(var i=0;i<cams.length;i++){if(cams[i].style.display!=='none')v++;}
+    var v=visibleCells().length;
     if(v===0)return;
     var land=window.innerWidth>=window.innerHeight;
-    var cols=land?Math.max(1,Math.ceil(Math.sqrt(v))):Math.max(1,Math.round(Math.sqrt(v)*0.7));
+    var cols=land?Math.max(1,Math.ceil(Math.sqrt(v))):Math.max(1,Math.floor(Math.sqrt(v)));
     var rows=Math.ceil(v/cols);
+    currentCols=cols;
     var g=document.querySelector('.grid');
     if(g){
         g.style.gridTemplateColumns='repeat('+cols+',1fr)';
         g.style.gridTemplateRows='repeat('+rows+',1fr)';
     }
 }
+function showCell(cell){
+    if(cell.style.display==='none'){
+        cell.style.display='';
+        cell.setAttribute('data-active','1');
+        relayout();
+    }
+}
+function hideCell(cell){
+    cell.style.display='none';
+    cell.setAttribute('data-active','0');
+    relayout();
+}
+function openCell(cell){
+    var n=cell&&cell.getAttribute('data-name');
+    if(n){try{Android.onCameraClick(n);}catch(e){}}
+}
+function focusMove(cell,key){
+    var cells=visibleCells();
+    if(!cells.length)return;
+    var i=cells.indexOf(cell);
+    if(i<0)i=0;
+    var next=i;
+    if(key==='ArrowRight')next=i+1;
+    if(key==='ArrowLeft')next=i-1;
+    if(key==='ArrowDown')next=i+currentCols;
+    if(key==='ArrowUp')next=i-currentCols;
+    next=Math.max(0,Math.min(cells.length-1,next));
+    if(cells[next])cells[next].focus();
+}
+function bindCell(cell){
+    cell.addEventListener('click',function(){openCell(cell);});
+    cell.addEventListener('keydown',function(ev){
+        if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();openCell(cell);return;}
+        if(ev.key==='ArrowRight'||ev.key==='ArrowLeft'||ev.key==='ArrowDown'||ev.key==='ArrowUp'){
+            ev.preventDefault();focusMove(cell,ev.key);
+        }
+    });
+}
 function refreshFrames(){
-    var t=Date.now(),els=document.querySelectorAll('[data-src]');
-    for(var i=0;i<els.length;i++){
-        (function(e,idx){
+    var t=Date.now(),cells=document.querySelectorAll('.cam[data-active="1"]');
+    for(var i=0;i<cells.length;i++){
+        (function(cell,idx){
             setTimeout(function(){
-                var url=e.getAttribute('data-src')+'&_='+t+'_'+idx;
+                var e=cell.querySelector('img');
+                var src=cell.getAttribute('data-src');
+                if(!e||!src)return;
+                var url=src+'&_='+t+'_'+idx;
                 var img=new Image();
                 img.onload=function(){
-                    var cell=e.parentElement;
                     var n=cell.getAttribute('data-name')||'';
                     fc[n]=0;
                     if(!cc[n]){cc[n]=1;try{Android.onCameraWorking(n);}catch(e){}}
-                    if(cell&&cell.style.display==='none'){
-                        cell.style.display='';
-                        relayout();
-                    }
+                    showCell(cell);
+                    setState(cell,'live',LABEL_LIVE);
                     e.src=url;
                 };
                 img.onerror=function(){
-                    var cell=e.parentElement;
                     var n=cell.getAttribute('data-name')||e.id||'x';
                     fc[n]=(fc[n]||0)+1;
                     if(fc[n]>=3){
-                        if(cell){cell.style.display='none';try{Android.onCameraFailed(n);}catch(e){}relayout();}
+                        if(cell.getAttribute('data-known')==='1'){
+                            setState(cell,'offline',LABEL_RETRYING);
+                        }else{
+                            hideCell(cell);
+                            try{Android.onCameraFailed(n);}catch(e){}
+                        }
+                    }else{
+                        setState(cell,'probing',LABEL_CONNECTING);
                     }
                 };
                 img.src=url;
             },idx*300);
-        })(els[i],i);
+        })(cells[i],i);
     }
 }
 function recheckHidden(){
@@ -293,32 +406,37 @@ function recheckHidden(){
         var cell=cams[i];
         if(cell.style.display==='none'){
             var img=cell.querySelector('img');
-            if(!img||img.getAttribute('data-src'))continue;
+            var src=cell.getAttribute('data-src');
+            if(!img||!src)continue;
             var nm=cell.getAttribute('data-name');
             if(!nm)continue;
-            (function(im,nm2,ii){
+            (function(im,nm2,src2,cell2,ii){
                 setTimeout(function(){
-                    var url='/api/frame.jpeg?src='+nm2+'&_='+t+'_r'+ii;
+                    var url=src2+'&_='+t+'_r'+ii;
                     var test=new Image();
                     test.onload=function(){
-                        im.setAttribute('data-src','/api/frame.jpeg?src='+nm2);
                         if(!cc[nm2]){cc[nm2]=1;try{Android.onCameraWorking(nm2);}catch(e){}}
-                        im.parentElement.style.display='';
-                        relayout();
+                        im.src=url;
+                        cell2.setAttribute('data-active','1');
+                        showCell(cell2);
+                        setState(cell2,'live',LABEL_LIVE);
                     };
                     test.src=url;
                 },ii*500);
-            })(img,nm,idx);
+            })(img,nm,src,cell,idx);
             idx++;
         }
     }
 }
+var cells=document.querySelectorAll('.cam');
+for(var bi=0;bi<cells.length;bi++)bindCell(cells[bi]);
 relayout();
 refreshFrames();
 recheckHidden();
 setInterval(function(){refreshFrames();},${refreshIntervalMs});
 setInterval(function(){recheckHidden();},30000);
 window.addEventListener('resize',relayout);
+setTimeout(function(){var v=visibleCells();if(v[0])v[0].focus();},200);
 </script>
 </body>
 </html>
@@ -326,15 +444,13 @@ window.addEventListener('resize',relayout);
         }
 
         streamUrl = "${server.url}/stream.html?"
-        webView.loadDataWithBaseURL(server.url, html, "text/html", "UTF-8", null)
+        webView.loadDataWithBaseURL("${server.url}/", html, "text/html", "UTF-8", null)
     }
 
     private fun openFullscreen(cameraName: String) {
         val server = currentServer ?: return
         val protocol = configRepo.getPreferredProtocol()
         val modeParam = if (protocol.isNotEmpty()) "&mode=$protocol" else ""
-        val url = "${server.url}/stream.html?src=$cameraName$modeParam"
-        android.widget.Toast.makeText(this, url, android.widget.Toast.LENGTH_LONG).show()
         val intent = Intent(this, FullscreenActivity::class.java).apply {
             putExtra("server_url", server.url)
             putExtra("camera_name", cameraName)
@@ -381,8 +497,7 @@ window.addEventListener('resize',relayout);
 
     private fun applyImmersiveForOrientation() {
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            topBar.visibility = View.GONE
-            uiVisible = false
+            topBar.visibility = if (uiVisible) View.VISIBLE else View.GONE
             window.decorView.systemUiVisibility = (
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -395,6 +510,20 @@ window.addEventListener('resize',relayout);
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
     }
+
+    private fun urlEncode(value: String): String =
+        URLEncoder.encode(value, StandardCharsets.UTF_8.name())
+
+    private fun jsString(value: String): String =
+        JSONObject.quote(value)
+
+    private fun htmlEscape(value: String): String =
+        value
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#39;")
 
     override fun onDestroy() {
         scope.cancel()

@@ -15,6 +15,7 @@ import com.example.go2rtcplay.data.ConfigRepository
 import com.example.go2rtcplay.data.ServerAddress
 import com.example.go2rtcplay.discovery.LanScanner
 import kotlinx.coroutines.*
+import java.net.URI
 
 class ConfigActivity : AppCompatActivity() {
 
@@ -36,6 +37,7 @@ class ConfigActivity : AppCompatActivity() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var adapter: ServerAdapter? = null
     private var scanJob: Job? = null
+    private var updatingProtocolChecks = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +69,8 @@ class ConfigActivity : AppCompatActivity() {
         confirmBtn.setOnClickListener {
             val intervalText = refreshIntervalInput.text.toString().trim()
             val intervalSec = intervalText.toIntOrNull()
-            if (intervalSec == null || intervalSec < 1) {
-                Toast.makeText(this, "Interval must be >= 1 second", Toast.LENGTH_SHORT).show()
+            if (intervalSec == null || intervalSec !in 1..60) {
+                Toast.makeText(this, getString(R.string.invalid_refresh_interval), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             configRepo.setRefreshInterval(intervalSec * 1000)
@@ -151,32 +153,57 @@ class ConfigActivity : AppCompatActivity() {
     private fun setupProtocolCheckboxes() {
         val selected = configRepo.getPreferredProtocol()
 
-        val checks = mapOf(
-            "" to cbAuto,
-            "webrtc" to cbWebrtc,
-            "mse" to cbMse,
-            "hls" to cbHls,
-            "mjpeg" to cbMjpeg
-        )
-
+        updatingProtocolChecks = true
         if (selected.isEmpty()) {
             cbAuto.isChecked = true
         } else {
             val parts = selected.split(",")
-            checks.forEach { (key, cb) ->
-                cb.isChecked = key.isEmpty() || parts.contains(key)
-            }
+            cbAuto.isChecked = false
+            cbWebrtc.isChecked = parts.contains("webrtc")
+            cbMse.isChecked = parts.contains("mse")
+            cbHls.isChecked = parts.contains("hls")
+            cbMjpeg.isChecked = parts.contains("mjpeg")
         }
+        updatingProtocolChecks = false
 
-        val listener = android.widget.CompoundButton.OnCheckedChangeListener { _, _ ->
+        val listener = android.widget.CompoundButton.OnCheckedChangeListener { button, isChecked ->
+            if (updatingProtocolChecks) return@OnCheckedChangeListener
+            if (button == cbAuto && isChecked) {
+                updatePreferredProtocol()
+                return@OnCheckedChangeListener
+            }
+            if (button != cbAuto && isChecked) {
+                updatingProtocolChecks = true
+                cbAuto.isChecked = false
+                updatingProtocolChecks = false
+            }
+            updatePreferredProtocol()
+        }
+        listOf(cbAuto, cbWebrtc, cbMse, cbHls, cbMjpeg).forEach { it.setOnCheckedChangeListener(listener) }
+    }
+
+    private fun updatePreferredProtocol() {
+        updatingProtocolChecks = true
+        if (cbAuto.isChecked) {
+            cbWebrtc.isChecked = false
+            cbMse.isChecked = false
+            cbHls.isChecked = false
+            cbMjpeg.isChecked = false
+            configRepo.setPreferredProtocol("")
+        } else {
             val p = mutableListOf<String>()
             if (cbWebrtc.isChecked) p.add("webrtc")
             if (cbMse.isChecked) p.add("mse")
             if (cbHls.isChecked) p.add("hls")
             if (cbMjpeg.isChecked) p.add("mjpeg")
-            configRepo.setPreferredProtocol(p.joinToString(","))
+            if (p.isEmpty()) {
+                cbAuto.isChecked = true
+                configRepo.setPreferredProtocol("")
+            } else {
+                configRepo.setPreferredProtocol(p.joinToString(","))
+            }
         }
-        checks.values.forEach { it.setOnCheckedChangeListener(listener) }
+        updatingProtocolChecks = false
     }
 
     private fun setupRefreshInterval() {
@@ -199,15 +226,31 @@ class ConfigActivity : AppCompatActivity() {
             .setPositiveButton(getString(R.string.add)) { _, _ ->
                 val text = input.text.toString().trim()
                 if (text.isNotEmpty()) {
-                    val parts = text.split(":")
-                    val host = parts[0].trim()
-                    val port = if (parts.size > 1) parts[1].trim().toIntOrNull() ?: 1984 else 1984
-                    configRepo.addServer(ServerAddress(host, port))
-                    refreshList()
+                    val server = parseServerAddress(text)
+                    if (server == null) {
+                        Toast.makeText(this, getString(R.string.invalid_address), Toast.LENGTH_SHORT).show()
+                    } else {
+                        configRepo.addServer(server)
+                        configRepo.setActiveServer(server)
+                        refreshList()
+                    }
                 }
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun parseServerAddress(text: String): ServerAddress? {
+        val normalized = text.trim().trimEnd('/')
+        if (normalized.isEmpty()) return null
+        return try {
+            val uri = URI(if (normalized.contains("://")) normalized else "http://$normalized")
+            val host = uri.host ?: return null
+            val port = if (uri.port > 0) uri.port else 1984
+            ServerAddress(host, port)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override fun onDestroy() {

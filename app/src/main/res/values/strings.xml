@@ -5,6 +5,8 @@
     <string name="settings_desc">Settings</string>
     <string name="back_desc">Back</string>
     <string name="delete_desc">Delete</string>
+    <string name="refresh_desc">Refresh</string>
+    <string name="retry">Retry</string>
 
     <!-- Layout - config -->
     <string name="server_address_label">go2rtc Server Address</string>
@@ -29,12 +31,20 @@
     <string name="local_ip">Local IP: %1$s</string>
     <string name="local_ip_unavailable">Local IP: unavailable</string>
     <string name="local_ip_failed">Local IP: failed</string>
+    <string name="invalid_address">Invalid server address</string>
+    <string name="invalid_refresh_interval">Refresh interval must be 1-60 seconds</string>
 
     <string name="refresh_interval_label">Snapshot Refresh Interval (seconds):</string>
 
     <!-- MainActivity -->
+    <string name="main_status">%1$s · %2$d cameras · %3$ds</string>
     <string name="connect_error">Cannot connect to %1$s\nPlease check address or network</string>
     <string name="no_streams">No available camera streams found</string>
+    <string name="camera_live">LIVE</string>
+    <string name="camera_connecting">CONNECTING</string>
+    <string name="camera_retrying">RETRYING</string>
+    <string name="camera_offline">OFFLINE</string>
     <string name="toast_first_launch">First launch: %1$d cameras</string>
     <string name="toast_known_cams">Known: %1$d, New: %2$d (%3$s)</string>
+    <string name="toast_new_cams">%1$d new camera(s) detected</string>
 </resources>
