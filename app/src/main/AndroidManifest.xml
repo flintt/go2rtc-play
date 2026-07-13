@@ -7,6 +7,8 @@
     <application
         android:allowBackup="true"
         android:label="Go2RTC Play"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Go2RtcPlay"
         android:usesCleartextTraffic="true">
